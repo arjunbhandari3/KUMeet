@@ -34,11 +34,13 @@ window.addEventListener('load', () => {
             });
             pc.push(data.socketId);
             init(true, data.socketId);
+            h.alert("success", `${username} joined the meeting!`, 'bottom-start');
         });
 
         socket.on('newUserStart', (data) => {
             pc.push(data.sender);
             init(false, data.sender);
+            h.alert("success", `You joined the meeting!`, 'bottom-start');
         });
 
         socket.on('ice candidates', async (data) => {
@@ -94,6 +96,7 @@ window.addEventListener('load', () => {
 
         socket.on('user leave', (data) => {
             h.closeVideo(data.socketId);
+            h.alert("error", `${username} left the meeting!`, 'bottom-start');
         });
     });
 
@@ -188,9 +191,6 @@ window.addEventListener('load', () => {
         pc[partnerID].onconnectionstatechange = (d) => {
             switch (pc[partnerID].iceConnectionState) {
                 case 'disconnected':
-                    h.closeVideo(partnerID);
-                    // h.alert("warning", `${username} left the meeting.`, "bottom-start");
-                    break;
                 case 'failed':
                     h.closeVideo(partnerID);
                     break;
@@ -237,12 +237,14 @@ window.addEventListener('load', () => {
 
     function leaveMeeting() {
         let data = {
+            socketId: socketId,
             room: room,
             sender: username
         };
 
         //emit hand raised
         socket.emit('user leave', data);
+        h.alert("error", `You left the meeting!`, 'bottom-start');
     }
 
     //file sharing
