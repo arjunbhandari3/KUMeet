@@ -1,0 +1,160 @@
+{{!-- <section id="meeting-checking-page" class="container">
+    <div class="section-title" data-aos="fade-down">
+        <h2>MEETING DETAILS</h2>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-lg-7 col-md-6">
+            <video class="local-video mirror-mode" id='local' volume='0' autoplay muted playsinline></video>
+            <div class="local-video-controls ">
+                <div class="control_buttons text-center">
+                    <div>
+                        <a class="audio" id='toggle-mute' title="Mute"><i class="fa fa-microphone"></i></a>
+                    </div>
+                    <div>
+                        <a class="video" id="toggle-video" title="Hide Video"><i class="fa fa-video"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5 col-md-6 mt-4 mt-md-40">
+            <div class="info text-center align-items-center">
+                <h1>Meeting is ready.</h1>
+                <div>
+                    <p class="text-center">Meeting Link: <a> {{ roomLink }}</a></p>
+                </div>
+                <div class="col-auto text-center">
+                    <a id="check-btn" class="btn btn-primary"> Join Now <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section> --}}
+<div class="main" id="meeting-page">
+    <div class="main_container">
+        <div class="meeting_videos">
+            <div id="videos"></div>
+        </div>
+        <div class="controls align-items-center">
+            <input type="text" value="{{user.full_name}}" id="remote-name" hidden>
+            <div class="controls__block col-md-3 align-items-center">
+                <div class="control__text text-center">
+                    <a data-toggle="modal" data-target="#meetingDetails">
+                        <span><strong><i class="fas fa-angle-up"></i> {{ page}}</strong></span>
+                    </a>
+                </div>
+            </div>
+            <div class="controls__block col-md-6 align-items-center justify-content-center">
+                <div class="control_buttons text-center">
+                    <div>
+                        <a class="audio" id='toggle-mute' title="Mute">
+                            <i class="fa fa-microphone"></i>
+                        </a>
+                    </div>
+                    <div>
+                        <a class="leave" title="Leave" id="leave"><i class="fa fa-phone"></i></a>
+                    </div>
+                    <div>
+                        <a class="video" id='toggle-video' title="Hide Video">
+                            <i class="fa fa-video"></i>
+                        </a>
+                    </div>
+                    <div>
+                        <a class="screenShare" id='screenShare' title="Share Screen"><i
+                                class="fa fa-share-square"></i></a>
+                    </div>
+                    <div>
+                        <a class="recordVideo" id='recordVideo' title="Start Recording">
+                            <i class="fa fa-dot-circle"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="controls__block col-md-3 align-items-center justify-content-center">
+                <div class="control_buttons text-center">
+                    <div>
+                        <a class="raiseHand" id='toggle-hand' title="Raise Your Hand">
+                            <i class="fa fa-hand-paper"></i>
+                        </a>
+                    </div>
+                    <div>
+                        <a class="canvas" id='canvas' title="Open WhiteBoard">
+                            <i class="fa fa-chalkboard"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="side_container">
+        <div class="side_contents" id="side_contents">
+            <div class="chat-header text-center">
+                <span id="group">
+                    <a>
+                        <strong>
+                            <i class="fa fa-comments"></i>
+                            <span class="badge badge-danger" id="newMessage"></span>
+                            Chat
+                        </strong>
+                    </a>
+                </span>
+            </div>
+            <div class="chat_window">
+                <ul id="messages"></ul>
+            </div>
+            <div class="input_message_container align-items-center">
+                <input type="file" id="fileInput" style="display:none;" name="files" multiple />
+                <button class="btn mr-3 control_buttons" title="Share File"
+                    onClick="javascript:document.getElementById('fileInput').click(); ">
+                    <span class="input-file attach_btn">
+                        <i class="fa fa-paperclip text-dark"></i>
+                    </span>
+                </button>
+                <input id="send-message" type="text" autocomplete="off" placeholder="Type message here...">
+            </div>
+        </div>
+        <div class="local_video_container">
+            <video class="local-video mirror-mode" id='local' volume='0' autoplay muted playsinline></video>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="meetingDetails" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="col justify-content-center">
+                    <h4 class="modal-title text-center">Meeting Details</h4>
+                    <p class="text-center">Copy and share meeting URL and password with your friends.</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <table class="table table-hover">
+                    <tbody>
+                        <tr>
+                            <td scope="row">Meeting URL: </td>
+                            <th id="meetingURL"></th>
+                        </tr>
+                        <tr>
+                            <td scope="row">Room Code: </td>
+                            <th id="meetingRoom"></th>
+                        </tr>
+                        <tr>
+                            <td scope="row">Password: </td>
+                            <th id="meetingPWD"></th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-success" id="meetingLink">
+                    <i class="fas fa-clone"></i> Copy URL
+                </button>
+                <button type="button" class="btn btn-primary" id="invitationLink">
+                    <i class="fas fa-share-alt"></i> Create Invitation Link
+                </button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-times"></i>
+                    Close</button>
+            </div>
+        </div>
+    </div>
+</div>

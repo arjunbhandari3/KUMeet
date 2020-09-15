@@ -1,0 +1,120 @@
+<!-- ============== Hero Section ================ --->
+<section id="hero" class="d-flex align-items-center">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 pt-5 pt-lg-0 order-2 order-lg-1 d-flex flex-column justify-content-center">
+                <h1 data-aos="fade-up">
+                    Keep Connected Wherever You Are.
+                </h1>
+                <h2 data-aos="fade-up">
+                    We help you to stay connected.
+                </h2>
+                <div data-aos="fade-up">
+                    {{#if user}}
+                    <a onclick="location.href='#';" class="btn-sign-up mr-10">Host A Meeting</a>
+                    <a onclick="location.href='/join-meeting';" class="btn-sign-up ml-10">Join A Meeting</a>
+                    {{else}}
+                    <a onclick="location.href='/signup';" class="btn-sign-up mr-10">Get Started</a>
+                    <a onclick="location.href='/join-meeting';" class="btn-sign-up ml-10">Join A Meeting</a>
+                    {{/if}}
+                </div>
+            </div>
+            <div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="fade-left">
+                <img src="img/hero-img.png" class="img-fluid" alt="" />
+            </div>
+        </div>
+    </div>
+</section>
+
+<main id="main">
+    <!-- ======= About Section ======= -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="section-title" data-aos="fade-up">
+                <h2>Welcome To KUMeet</h2>
+                <br>
+                <h5>
+                    We are a small creative group focusing to bring your students, leads,
+                    customers and team members together empowering your remote workforce with Secure Video
+                    Conferencing.
+                </h5>
+            </div>
+            <div class="row">
+                <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0">
+                    <div class="icon-box" data-aos="fade-up">
+                        <div class="icon">
+                            <i class="fas fa-laptop"></i>
+                        </div>
+                        <h4 class="title">
+                            <a href="">Meetings</a>
+                        </h4>
+                        <p class="description">
+                            Voluptatum deleniti atque corrupti quos
+                            dolores et quas molestias excepturi
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0">
+                    <div class="icon-box" data-aos="fade-up">
+                        <div class="icon">
+                            <i class="fas fa-share-square"></i>
+                        </div>
+                        <h4 class="title">
+                            <a href="">Sharing Contents</a>
+                        </h4>
+                        <p class="description">
+                            Duis aute irure dolor in reprehenderit in
+                            voluptate velit esse cillum dolore
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0">
+                    <div class="icon-box" data-aos="fade-up">
+                        <div class="icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h4 class="title">
+                            <a href="">Discussions Rooms</a>
+                        </h4>
+                        <p class="description">
+                            Excepteur sint occaecat cupidatat non
+                            proident, sunt in culpa qui officia
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0">
+                    <div class="icon-box" data-aos="fade-up">
+                        <div class="icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <h4 class="title"><a href="">Video Webinars</a></h4>
+                        <p class="description">
+                            At vero eos et accusamus et iusto odio
+                            dignissimos ducimus qui blanditiis
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======= Parallax ======= -->
+    <section id="parallax" class="parallax">
+        <div class="container" data-aos="zoom-in">
+            <div class="section-header text-center">
+                <h2>Empower Your Remote Workforce with <br> Secure Video Conferencing</h2>
+            </div>
+            </br>
+            <div class="col-auto text-center">
+                {{#if user}}
+                <a onclick="location.href='#';" class="btn btn-primary">Host A Meeting</a>
+                {{else}}
+                <a onclick="location.href='/signup';" class="btn btn-primary">Get Started</a>
+                {{/if}}
+            </div>
+        </div>
+    </section>
+</main>

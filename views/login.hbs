@@ -1,0 +1,43 @@
+<section id="login-container" class="container">
+    <div class="section-title" data-aos="fade-down">
+        <h2>SIGN IN</h2>
+    </div>
+    <br>
+    <form method="POST" id="login" action="/signin">
+        <div class="row justify-content-md-center" data-aos="fade-left">
+            <div class="col-md-4 mx-auto">
+                {{> errors}}
+                <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+                <div class="form-group">
+                    <label for="email">Email :</label>
+                    <input type="email" id="email" class="form-control" name="email" placeholder="johndoe@example.com"
+                        autocomplete="off" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password :</label>
+                    <input type="password" id="password" class="form-control" name="password" placeholder="Password"
+                        autocomplete="off" required>
+                </div>
+                <p class="text-right"><a href='#'> Forgot Password?</a></p>
+
+                <button class="btn btn-primary btn-block" type="submit">SIGN IN</button><br>
+
+                <p class="text-center">Don't have an account yet? <a href='/signup'> Sign Up
+                        Here</a></p>
+                <p class="text-center">OR</p>
+                <p class="text-center">Sign In With</p>
+                <div class="social-sign text-center">
+                    <div>
+                        <a class="google" title="Google" onclick="location.href='/auth/google';"><span><i
+                                    class="fab fa-google"></i>
+                            </span> </a>
+                    </div>
+                    <div>
+                        <a class="fb" title="Facebook" onclick="location.href='/auth/facebook';"> <span><i
+                                    class="fab fa-facebook-f"></i></span> </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>

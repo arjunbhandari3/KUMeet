@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+    <title>{{page}} - KUMeet</title>
+    <meta content="" name="descriptison" />
+    <meta content="" name="keywords" />
+
+    <link
+        href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+        rel="stylesheet" />
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="plugins/icofont/icofont.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+    <link href="plugins/aos/aos.css" rel="stylesheet" />
+    <link href="css/style.css" rel="stylesheet" />
+    {{#if customCSS}}
+    <link href="css/{{customCSS}}.css" rel="stylesheet" />
+    {{/if}}
+</head>
+
+<body>
+    {{> header}}
+    {{{body}}}
+    {{> footer}}
+
+    <script src="plugins/jquery/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="plugins/jquery.easing/jquery.easing.min.js"></script>
+    <script src="plugins/aos/aos.js"></script>
+    <script src="js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    {{#if customJS}}
+    <script src="js/{{customJS}}.js"></script>
+    {{/if}}
+    {{> flash }}
+</body>
+
+</html>

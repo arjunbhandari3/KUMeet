@@ -1,0 +1,22 @@
+<section id="login-container" class="container">
+    <div class="section-title" data-aos="fade-down">
+        <h2>HOST MEETING</h2>
+    </div>
+    <br>
+    <form method="POST" id="host_meeting" action="/instant-meeting">
+        <div class="row justify-content-md-center" data-aos="fade-left">
+            <div class="col-md-4 mx-auto">
+                {{> errors}}
+                <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+                <div class="form-group">
+                    <label for="room_name">Room Name:</label>
+                    <input type="text" id="room_name" class="form-control" name="room_name" placeholder="Room Name"
+                        autocomplete="off" required>
+                </div>
+                </br>
+                <button class="btn btn-primary btn-block mt-20" type="submit">CREATE</button><br>
+                <p class="text-center">Want to Schedule Meeting? <a href="/schedule-meeting"> Schedule Meeting</a></p>
+            </div>
+        </div>
+    </form>
+</section>

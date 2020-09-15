@@ -1,0 +1,55 @@
+<section id="login-container" class="container">
+    <div class="section-title" data-aos="fade-down">
+        <h2>SIGN UP</h2>
+    </div>
+    <br>
+    <form method="POST" id="register" action="/signup" autocomplete="off">
+        <div class="row justify-content-md-center" data-aos="fade-left">
+            <div class="col-md-4 mx-auto">
+                {{> errors}}
+                <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+                <div class="form-group">
+                    <label for="full_name">Full Name :</label>
+                    <input type="text" id="full_name" class="form-control" name="full_name" placeholder="John Doe"
+                        autocomplete="off" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email :</label>
+                    <input type="email" id="email" class="form-control" name="email" placeholder="johndoe@example.com"
+                        autocomplete="off" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password :</label>
+                    <input type="password" class="form-control" name="password" placeholder="Password"
+                        aria-describedby=" passwordHelpBlock" autocomplete="off" required>
+                    <small id="passwordHelpBlock" class="form-text text-muted">
+                        The password must have at least 8 characters, at least 1 digit(s), at least 1 lower case
+                        letter(s), at least 1 upper case letter(s).
+                    </small>
+                </div>
+                <div class="form-group">
+                    <label for="password2">Confirm Password :</label>
+                    <input type="password" class="form-control" name="password2" placeholder="Rewrite Password"
+                        autocomplete="off" required>
+                </div><br>
+                <button class="btn btn-primary btn-block" type="submit">SIGN UP</button><br>
+
+                <p class="text-center">Already have an account? <a href='/signin'> Sign In Here</a>
+                </p>
+                <p class="text-center">OR</p>
+                <p class="text-center">Sign Up With</p>
+                <div class="social-sign text-center">
+                    <div>
+                        <a class="google" title="Google" onclick="location.href='/auth/google';"><span><i
+                                    class="fab fa-google"></i>
+                            </span> </a>
+                    </div>
+                    <div>
+                        <a class="fb" title="Facebook" onclick="location.href='/auth/facebook';"> <span><i
+                                    class="fab fa-facebook-f"></i></span> </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>

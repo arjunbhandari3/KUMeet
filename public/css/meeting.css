@@ -1,0 +1,327 @@
+.main {
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+    overflow-y: hidden;
+}
+
+#meeting-checking-page {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+#meeting-page {
+    animation: css 0s 1s forwards;
+    visibility: hidden;
+}
+
+.main_container {
+    flex: 0.75;
+    display: flex;
+    flex-direction: column;
+}
+
+.side_container {
+    flex: 0.25;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-left: 1px solid #3D3D42;
+}
+
+.local-video-controls {
+    position: absolute;
+    bottom: 0;
+    background-color: transparent;
+    z-index: 300000;
+    padding: 30px;
+    width: 100%;
+    text-align: center;
+    justify-content: space-between;
+    animation: css 0s 4s forwards;
+    visibility: hidden;
+}
+
+@keyframes css {
+    to {
+        visibility: visible;
+    }
+}
+
+.meeting_videos {
+    top: 0;
+    left: 0;
+    flex-grow: 1;
+    background-color: whitesmoke;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#videos {
+    position: relative;
+    flex-grow: 1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    max-height: 85vh !important;
+}
+
+.remote-video {
+    max-width: 100%;
+    display: inline-block;
+    vertical-align: middle;
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    max-height: 85vh !important;
+}
+
+.remote-video-controls {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    bottom: 0;
+    background-color: rgb(46, 45, 45);
+    z-index: 300000;
+    padding: 10px;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+}
+
+.control__buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    min-width: 80px;
+    cursor: pointer;
+}
+
+.controls {
+    display: flex;
+    flex-direction: row;
+    left: 0;
+    bottom: 0;
+    position: sticky;
+    background: white;
+    box-shadow: 0px 0px 16px 0px rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    color: black;
+    align-items: center;
+    justify-content: center;
+}
+
+.controls__block {
+    display: flex;
+    flex-direction: row;
+}
+
+.control__text {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 10px;
+    cursor: pointer;
+}
+
+.control_text a span {
+    font-size: 18px;
+    color: black;
+    text-decoration: none;
+    display: inline;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.control_buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.control_buttons a {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgb(235, 226, 226);
+    margin: 0.8rem .4rem;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    display: -ms-grid;
+    display: grid;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    justify-items: center;
+    cursor: pointer;
+}
+
+.control_buttons a i {
+    font-size: 24px;
+    color: black;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.control_buttons .leave i,
+.control_buttons .hide i,
+.control_buttons .mute i {
+    color: white !important;
+}
+
+.control_buttons .leave,
+.control_buttons .hide,
+.control_buttons .mute,
+.control_buttons .record {
+    background: red;
+}
+
+.control_buttons a:hover {
+    background: #d3d6d8;
+}
+
+.control_buttons .leave:hover,
+.control_buttons .hide:hover,
+.control_buttons .mute:hover,
+.control_buttons .record:hover {
+    background: red !important;
+}
+
+.side_contents {
+    flex: 0.75;
+    display: flex;
+    flex-direction: column;
+}
+
+.local_video_container {
+    flex: 0.25;
+    background: black;
+    bottom: 0;
+    right: 0;
+    position: sticky;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.side_contents {
+    flex: 0.75;
+    display: flex;
+    top: 0;
+    right: 0;
+    position: sticky;
+}
+
+.chat-header {
+    background: whitesmoke;
+    padding: 15px 15px;
+    box-shadow: 0px 0px 12px 0px rgba(0, 0, 0, 0.3);
+}
+
+.chat-header a {
+    color: black;
+    font-size: 20px;
+    text-align: center;
+}
+
+.chat_window {
+    flex: 0.9;
+    max-height: 55vh !important;
+    max-width: 25vw;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+#messages {
+    margin-bottom: 2px;
+    color: black;
+    list-style: none;
+}
+
+#messages .message {
+    padding: 10px;
+    overflow-wrap: break-word;
+}
+
+#messages::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+
+.input_message_container {
+    flex: 0.1;
+    display: flex;
+    flex-direction: row;
+    bottom: 0 !important;
+    padding: 15px 15px;
+    box-shadow: 0px 0px 12px 0px rgba(0, 0, 0, 0.3);
+    background-color: whitesmoke;
+}
+
+.input_message_container input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid black;
+    margin: 0;
+    outline: none;
+    box-shadow: none;
+}
+
+.input_message_container .input-file {
+    font-size: 22px;
+    color: black;
+}
+
+.input_message_container input:focus {
+    border-bottom: 2px solid blue;
+}
+
+.local_video_container video {
+    display: inline-block;
+    vertical-align: middle;
+    object-fit: cover;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    max-height: 25vh !important;
+    bottom: 0;
+    right: 0;
+    position: sticky;
+}
+
+.mirror-mode {
+    -ms-transform: scaleX(-1);
+    -moz-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+}
+
+#meetingURL {
+    text-decoration: none;
+    overflow-wrap: break-word;
+}
+
+.badge {
+    position: relative;
+    top: -15px;
+    left: -15px;
+    border-radius: 50%;
+}
+
+.chat-header a i {
+    font-size: 25px;
+    color: black;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}

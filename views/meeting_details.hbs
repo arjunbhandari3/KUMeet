@@ -1,0 +1,25 @@
+<section id="login-container" class="container">
+    <div class="section-title" data-aos="fade-down">
+        <h2>MEETING DETAILS</h2>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-lg-7 col-md-6">
+            <div class="row">
+                <video class="local-video mirror-mode" id='local' volume='0' autoplay muted></video>
+            </div>
+        </div>
+        <div class="col-lg-5 col-md-6 mt-4 mt-md-0">
+            <div class="info text-center">
+                <h1>Meeting is ready.</h1>
+                <div>
+                    <p class="text-center">Meeting Link: <a href="/?room={{ room_code}}"> {{ roomLink }}</a></p>
+                </div>
+                <div class="col-auto text-center">
+                    <a href="/?room={{ room_code }}" class="btn btn-primary"> Join Now <i
+                            class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

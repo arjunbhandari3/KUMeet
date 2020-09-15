@@ -1,0 +1,24 @@
+<nav class="nav-menu d-none d-lg-block">
+    <ul>
+        <li><a onclick="location.href='/join-meeting';">Join A Meeting</a></li>
+        <li class="drop-down"><a onclick="location.href='#';">Host A Meeting </a>
+            <ul>
+                <li><a onclick="location.href='/instant-meeting';">Start An Instant Meeting</a></li>
+                <li><a onclick="location.href='#';">Schedule A Meeting</a></li>
+            </ul>
+        </li>
+        {{#if user}}
+        <li class="drop-down"><a onclick="location.href='#';"> Account </a>
+            <ul>
+                <li><a onclick="location.href='/profile';"> Profile</a></li>
+                <li><a onclick="location.href='/logout';"> Log Out</a></li>
+            </ul>
+        </li>
+        {{else }}
+        <li><a onclick="location.href='/signin';">Sign In</a></li>
+        <li class="sign-up">
+            <a onclick="location.href='/signup';">Sign Up</a>
+        </li>
+        {{/if}}
+    </ul>
+</nav>
