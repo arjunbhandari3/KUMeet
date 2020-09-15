@@ -53,7 +53,7 @@ const stream = (socket) => {
         socket.to(data.room).emit('file-receive-complete', data.file);
     });
 
-    socket.on('disconnect', (data) => {
+    socket.on('user leave', (data) => {
         //leave a room
         socket.leave(data.room);
         socket.leave(data.socketId);

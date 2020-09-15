@@ -9,9 +9,11 @@
     },
     "keywords": [
         "KUMeet",
+        "WebRTC",
         "videochat",
         "videoconference",
-        "WebRTC"
+        "screen share",
+        "file sharing"
     ],
     "author": "Arjun Bhandari",
     "license": "ISC",
