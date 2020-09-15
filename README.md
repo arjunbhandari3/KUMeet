@@ -6,5 +6,5 @@ Video Conferencing using WebRTC
    - Screen Sharing
    - Chat
    - File Sharing
-   - Hand Raising & Alert
+   - Hand Raising
 
