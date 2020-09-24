@@ -1,4 +1,5 @@
 const stream = (socket) => {
+
     socket.on('join', (data) => {
         //join a room
         socket.join(data.room);
@@ -29,6 +30,13 @@ const stream = (socket) => {
         socket.to(data.to).emit('ice candidates', {
             candidate: data.candidate,
             sender: data.sender
+        });
+    });
+
+    socket.on('presenter', (data) => {
+        socket.to(data.room).emit('presenter', {
+            presenterID: data.presenterID,
+            presenter: data.presenter
         });
     });
 

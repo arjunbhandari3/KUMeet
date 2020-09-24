@@ -28,13 +28,13 @@ export default {
         if (this.userMediaAvailable()) {
             return navigator.mediaDevices.getDisplayMedia({
                 video: {
-                    cursor: "always"
+                    cursor: "always",
                 },
                 audio: {
                     echoCancellation: true,
                     noiseSuppression: true,
                     sampleRate: 44100
-                }
+                },
             });
         } else {
             throw new Error('User media not available');
@@ -106,6 +106,19 @@ export default {
         localVidElem.srcObject = stream;
         localVidElem.removeAttribute('controls');
         mirrorMode ? localVidElem.classList.add('mirror-mode') : localVidElem.classList.remove('mirror-mode');
+    },
+
+    setPresenterStream(userId) {
+        var screenVidElem = document.getElementById('screenShareVideo');
+        screenVidElem.classList.add(`${userId}`);
+        var screenshareID = document.getElementById('screenShareVideo').className;
+        if (screenshareID === userId) {
+            console.log(userId, screenshareID, userId)
+            screenVidElem.srcObject = document.getElementById(`${userId}-video`).srcObject;
+
+            document.getElementById('videos').setAttribute('hidden', 'true');
+            document.getElementById('screenShareScreen').removeAttribute('hidden');
+        }
     },
 
     addUserProfile(useProfile) {

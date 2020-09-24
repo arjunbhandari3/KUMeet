@@ -18,15 +18,16 @@ passport.use(
                         email: email
                     },
                     function (err, user) {
+                        console.log(user)
                         if (err) {
                             return done(err);
-                        } else if (!user.password) {
+                        } else if (user && !user.password) {
                             user.password = user.encryptPassword(password);
                             user.save((err) => {
                                 if (err) throw err;
                                 return done(null, user);
                             });
-                        } else if (user.email) {
+                        } else if (user && user.email) {
                             return done(null, false, req.flash("error", "Email already Exists."));
                         } else {
                             var newUser = new User();
@@ -40,8 +41,7 @@ passport.use(
                                 return done(null, newUser);
                             });
                         }
-                    }
-                );
+                    });
             } else {
                 return done(null, req.user);
             }

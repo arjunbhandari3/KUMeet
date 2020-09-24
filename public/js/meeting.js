@@ -1,4 +1,5 @@
 import h from './helpers.js';
+import '../js/canvas-designer-widget.js';
 
 window.addEventListener('load', () => {
 
@@ -14,6 +15,9 @@ window.addEventListener('load', () => {
     var socketId = '';
     var myStream = '';
     var screen = '';
+    var canvasStream = '';
+    var presenter;
+    var presenterID;
 
     //Get user video by default
     getAndSetUserStream();
@@ -30,7 +34,7 @@ window.addEventListener('load', () => {
         socket.on('new user', (data) => {
             socket.emit('newUserStart', {
                 to: data.socketId,
-                sender: socketId
+                sender: socketId,
             });
             pc.push(data.socketId);
             init(true, data.socketId);
@@ -41,6 +45,11 @@ window.addEventListener('load', () => {
             pc.push(data.sender);
             init(false, data.sender);
             h.alert("success", `You joined the meeting!`, 'bottom-start');
+            if (presenter != undefined) {
+                h.alert("info", `${presenter} is presenting screen!`, 'top-start');
+                h.setPresenterStream(presenterID);
+                console.log(presenterID, presenter, '1111')
+            }
         });
 
         socket.on('ice candidates', async (data) => {
@@ -79,6 +88,11 @@ window.addEventListener('load', () => {
             }
         });
 
+        socket.on('presenter', (data) => {
+            h.alert("info", `${data.presenter} is presenting screen!`, 'top-start');
+            h.setPresenterStream(data.presenterID);
+        });
+
         socket.on('chat', (data) => {
             h.addChat(data, 'remote');
         });
@@ -87,11 +101,16 @@ window.addEventListener('load', () => {
             h.alert("info", `${data.raiser} raised hand!`, 'top-start');
         });
 
-        socket.on('file-receive-start', function (data) {
+        socket.on('file-receive-start', (data) => {
             receiveFileStart(data);
         });
-        socket.on('file-receive-complete', function (data) {
+
+        socket.on('file-receive-complete', (data) => {
             receiveFileComplete(data);
+        });
+
+        socket.on('canvas-design', function (data) {
+            designer.syncData(data);
         });
 
         socket.on('user leave', (data) => {
@@ -115,7 +134,12 @@ window.addEventListener('load', () => {
 
         if (screen && screen.getTracks().length) {
             screen.getTracks().forEach((track) => {
+                screen.isScreen = true;
                 pc[partnerID].addTrack(track, screen);
+            });
+        } else if (canvasStream && canvasStream.getTracks().length) {
+            canvasStream.getTracks().forEach((track) => {
+                pc[partnerID].addTrack(track, canvasStream);
             });
         } else if (myStream) {
             myStream.getTracks().forEach((track) => {
@@ -164,38 +188,55 @@ window.addEventListener('load', () => {
         //add
         pc[partnerID].ontrack = (e) => {
             let str = e.streams[0];
-            if (document.getElementById(`${ partnerID }-video`)) {
-                document.getElementById(`${ partnerID }-video`).srcObject = str;
+            console.log(str)
+            if (str.isScreen) {
+                let screenELm = document.getElementById(`screenShareVideo`);
+                screenELm.classList.add(`${userId}`);
+                screenELm.srcObject = str;
+                screenELm.removeAttribute('controls');
+
+                document.getElementById('videos').setAttribute('hidden', 'true');
+                document.getElementById('screenShareScreen').removeAttribute('hidden');
             } else {
-                //create a new div for card
-                let cardDiv = document.createElement('div');
-                cardDiv.className = 'card';
-                cardDiv.id = partnerID;
+                if (document.getElementById(`${ partnerID }-video`)) {
+                    document.getElementById(`${ partnerID }-video`).srcObject = str;
+                } else {
+                    //create a new div for card
+                    let cardDiv = document.createElement('div');
+                    cardDiv.className = 'card';
+                    cardDiv.id = partnerID;
 
-                const innerDiv = `<video class="remote-video" id="${ partnerID }-video" autoplay playsinline></video>
-                    <div class="remote-video-controls">
-                        <div class"text-center">
-                            <a id="${ partnerID }" class="remote_name text-white">${username}</a>
-                        </div>
-                    </div>`;
+                    const innerDiv = `<video class="remote-video" id="${ partnerID }-video" autoplay playsinline></video>
+                        <div class="remote-video-controls">
+                            <div class"text-center">
+                                <a id="${ partnerID }" class="remote_name text-white">${username}</a>
+                            </div>
+                        </div>`;
 
-                cardDiv.innerHTML = innerDiv;
-                document.getElementById('videos').appendChild(cardDiv);
-                document.getElementById(`${ partnerID }-video`).srcObject = str;
-                document.getElementById(`${ partnerID }-video`).removeAttribute('controls');
+                    cardDiv.innerHTML = innerDiv;
+                    document.getElementById('videos').appendChild(cardDiv);
+                    document.getElementById(`${ partnerID }-video`).srcObject = str;
+                    document.getElementById(`${ partnerID }-video`).removeAttribute('controls');
 
-                h.adjustVideoElemSize();
+                    h.adjustVideoElemSize();
+                }
             }
         };
 
         pc[partnerID].onconnectionstatechange = (d) => {
             switch (pc[partnerID].iceConnectionState) {
                 case 'disconnected':
+                    presenter = null;
+                    presenterID = null;
                 case 'failed':
                     h.closeVideo(partnerID);
+                    presenter = null;
+                    presenterID = null;
                     break;
                 case 'closed':
                     h.closeVideo(partnerID);
+                    presenter = null;
+                    presenterID = null;
                     break;
             }
         };
@@ -241,6 +282,8 @@ window.addEventListener('load', () => {
             room: room,
             sender: username
         };
+        presenter = null;
+        presenterID = null;
 
         //emit hand raised
         socket.emit('user leave', data);
@@ -337,6 +380,48 @@ window.addEventListener('load', () => {
         }
     }
 
+    // canvas designer
+    var designer = new CanvasDesigner();
+
+    designer.widgetHtmlURL = 'https://www.webrtc-experiment.com/Canvas-Designer/widget.html';
+    designer.widgetJsURL = 'https://www.webrtc-experiment.com/Canvas-Designer/widget.min.js';
+
+    designer.addSyncListener(function (data) {
+        socket.emit('canvas-design', data);
+    });
+
+    designer.setSelected('pencil');
+
+    designer.setTools({
+        pencil: true,
+        text: true,
+        image: true,
+        pdf: true,
+        eraser: true,
+        line: true,
+        arrow: true,
+        dragSingle: true,
+        dragMultiple: true,
+        arc: true,
+        rectangle: true,
+        quadratic: false,
+        bezier: true,
+        marker: true,
+        zoom: false,
+        lineWidth: false,
+        colorsPicker: true,
+        extraOptions: false,
+        code: false,
+        undo: true
+    });
+
+    designer.appendTo(document.getElementById('meeting_videos'));
+    designer.iframe.style.display = 'none';
+
+    designer.captureStream(function (stream) {
+        canvasStream.addStream(stream);
+    });
+
     //share screen
     function shareScreen() {
         h.shareScreen().then((stream) => {
@@ -351,9 +436,20 @@ window.addEventListener('load', () => {
 
             //save my screen stream
             screen = stream;
-
+            stream.isScreen = true;
             //share the new stream with all partners
             broadcastNewTracks(stream, 'video', false);
+
+            let data = {
+                room: room,
+                presenterID: socketId,
+                presenter: username
+            };
+            presenter = username;
+            presenterID = socketId;
+
+            socket.emit('presenter', data);
+            h.alert("info", `You are presenting your screen!`, 'top-start');
 
             //When the stop sharing button shown by the browser is clicked
             screen.getVideoTracks()[0].addEventListener('ended', () => {
@@ -377,6 +473,8 @@ window.addEventListener('load', () => {
             let shareIconElem = document.querySelector('#screenShare');
             shareIconElem.setAttribute('title', 'Share screen');
             shareIconElem.children[0].classList.remove('text-primary');
+            document.getElementById('screenShareScreen').setAttribute('hidden', 'true');
+            document.getElementById('videos').removeAttribute('hidden');
 
             broadcastNewTracks(myStream, 'video');
         }).catch((e) => {
@@ -385,6 +483,7 @@ window.addEventListener('load', () => {
     }
 
     function broadcastNewTracks(stream, type, mirrorMode = true) {
+
         h.setLocalStream(stream, mirrorMode);
 
         let track = type == 'audio' ? stream.getAudioTracks()[0] : stream.getVideoTracks()[0];
@@ -509,6 +608,31 @@ window.addEventListener('load', () => {
         } else {
             elem.setAttribute('title', 'Raise Your Hand');
             elem.children[0].classList.remove('text-primary');
+        }
+    });
+
+    //  When user opens canvas
+    document.getElementById('whiteboard').addEventListener('click', (e) => {
+        e.preventDefault();
+
+        let elem = document.getElementById('whiteboard');
+
+        if (elem.getAttribute('title') === 'Open WhiteBoard') {
+            elem.setAttribute('title', 'Close WhiteBoard');
+            elem.children[0].classList.add('text-primary');
+
+            document.getElementById('videos').setAttribute('hidden', 'true');
+            document.getElementById('screenShareScreen').setAttribute('hidden', 'true');
+            designer.iframe.style.display = 'block';
+
+        } else {
+            elem.setAttribute('title', 'Open WhiteBoard');
+            elem.children[0].classList.remove('text-primary');
+
+            document.getElementById('screenShareScreen').setAttribute('hidden', 'true');
+            document.getElementById('videos').removeAttribute('hidden');
+            designer.iframe.style.display = 'none';
+
         }
     });
 

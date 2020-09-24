@@ -32,8 +32,11 @@
 </section> --}}
 <div class="main" id="meeting-page">
     <div class="main_container">
-        <div class="meeting_videos">
+        <div class="meeting_videos" id="meeting_videos">
             <div id="videos"></div>
+            <div id="screenShareScreen" hidden>
+                <video id='screenShareVideo' autoplay playsinline></video>
+            </div>
         </div>
         <div class="controls align-items-center">
             <input type="text" value="{{user.full_name}}" id="remote-name" hidden>
@@ -78,7 +81,7 @@
                         </a>
                     </div>
                     <div>
-                        <a class="canvas" id='canvas' title="Open WhiteBoard">
+                        <a class="whiteboard" id='whiteboard' title="Open WhiteBoard">
                             <i class="fa fa-chalkboard"></i>
                         </a>
                     </div>
