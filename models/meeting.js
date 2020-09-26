@@ -15,6 +15,15 @@ const MeetingSchema = new mongoose.Schema({
     password: {
         type: String,
     },
+    meeting_date:{
+        type: Date
+    },
+    start_time:{
+        type: String
+    },
+    end_time:{
+        type: String
+    },
     owner: {
         type: String,
     },

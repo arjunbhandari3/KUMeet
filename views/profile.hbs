@@ -1,7 +1,33 @@
 <section id="login-container" class="container">
     <div class="section-title" data-aos="fade-down">
         <h2>Welcome To Your Profile</h2>
-        <h2>{{user.full_name}}</h2>
+        <div class="container emp-profile">
+            <form method="post">
+                <div class="row">
+                    <div class="col">
+                        <div class="profile-img">
+                            <img src="{{user.image}}" alt="" />
+                            <h5>
+                                {{user.full_name}}
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-md-8 mx-auto">
+                        <div class="profile-tab">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Email : </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>{{user.email}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-    <br>
 </section>

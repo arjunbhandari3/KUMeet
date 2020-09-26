@@ -188,4 +188,5 @@ router.get("/logout", ensureAuth, function (req, res, next) {
     req.logout();
     res.redirect("/");
 });
+
 module.exports = router;

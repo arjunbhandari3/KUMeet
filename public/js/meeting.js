@@ -415,13 +415,6 @@ window.addEventListener('load', () => {
         undo: true
     });
 
-    designer.appendTo(document.getElementById('meeting_videos'));
-    designer.iframe.style.display = 'none';
-
-    designer.captureStream(function (stream) {
-        canvasStream.addStream(stream);
-    });
-
     //share screen
     function shareScreen() {
         h.shareScreen().then((stream) => {
@@ -623,8 +616,22 @@ window.addEventListener('load', () => {
 
             document.getElementById('videos').setAttribute('hidden', 'true');
             document.getElementById('screenShareScreen').setAttribute('hidden', 'true');
+
+            designer.appendTo(document.getElementById('meeting_videos'));
             designer.iframe.style.display = 'block';
 
+            // designer.captureStream(function (stream) {
+            //     canvasStream.addStream(stream);
+            //     console.log(stream,"helllo")
+            //     broadcastNewTracks(stream, 'video', false);
+            // });
+            var tempStreamCanvas = document.getElementById('temp-stream-canvas');
+            var tempStream = tempStreamCanvas.captureStream();
+            tempStream.isScreen = true;
+            tempStream.streamid = tempStream.id;
+            tempStream.type = 'local';
+            canvasStream = tempStream;
+            window.tempStream = tempStream;
         } else {
             elem.setAttribute('title', 'Open WhiteBoard');
             elem.children[0].classList.remove('text-primary');

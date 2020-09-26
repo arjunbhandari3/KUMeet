@@ -13,13 +13,14 @@ router.get("/", (req, res) => {
     });
 });
 
-// // @desc    Profile
-// // @route   GET /profile
-router.get("/profile", ensureAuth, async (req, res, next) => {
+// @desc    Profile
+// @route   GET /profile
+router.get("/profile", ensureAuth, (req, res, next) => {
     try {
         res.render("profile", {
             layout: "main",
-            page: "Profile"
+            page: "Profile",
+            customCSS: "logreg",
         });
     } catch (err) {
         console.error(err);

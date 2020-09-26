@@ -61,6 +61,10 @@ const stream = (socket) => {
         socket.to(data.room).emit('file-receive-complete', data.file);
     });
 
+    socket.on('canvas-design', (data) => {
+        socket.to(data.room).emit('canvas-design', data);
+    });
+
     socket.on('user leave', (data) => {
         //leave a room
         socket.leave(data.room);
