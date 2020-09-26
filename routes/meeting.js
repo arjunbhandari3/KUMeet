@@ -4,14 +4,20 @@ const Meeting = require("../models/meeting");
 const {
     google
 } = require('googleapis')
-
 const {
     OAuth2
 } = google.auth
-const {
-    addWeeks
-} = require('date-fns')
-const credentials = require('../public/credentials.json')
+
+const oAuth2Client = new OAuth2(process.env.GOOGLE_CALENDER_CLIENT_ID, process.env.GOOGLE_CALENDER_CLIENT_SECRET)
+
+oAuth2Client.setCredentials({
+    refresh_token: process.env.GOOGLE_CALENDER_REFRESH_TOKEN,
+})
+
+const calendar = google.calendar({
+    version: 'v3',
+    auth: oAuth2Client
+})
 
 const csrf = require("csurf");
 // CSRF Protection
@@ -162,28 +168,6 @@ router.post(
         check("room_name")
         .notEmpty()
         .withMessage("Room Name is required."),
-        check('meeting_date')
-        .trim()
-        .isDate()
-        .withMessage('Must be a valid date')
-        .custom(value => {
-            let enteredDate = new Date(value);
-            let todaysDate = new Date();
-            if (enteredDate > todaysDate) {
-                throw new Error("Invalid Date");
-            }
-            return true;
-        }),
-        check("start_time")
-        .custom((value, {
-            req
-        }) => {
-            if (value > req.body.end_time) {
-                throw new Error("Invalid Time");
-            } else {
-                return value;
-            }
-        }),
     ],
     (req, res, next) => {
         // Check validation.
@@ -194,35 +178,37 @@ router.post(
         } else {
             const room_code = helper.generateRandomString();
             const password = helper.generateRandomPassword();
-            Meeting.findOne({
-                    room_code
+            let meetingLink = `http://localhost:3000/meeting?room=${room_code}&pwd=${password}`
+            let description = `You have a meeting scheduled today. Your Meeting Details are:\n Meeting Link: ${meetingLink} \n Meeting Room Name: ${req.body.room_name} \n Meeting Room Password: ${password}`;
+            const eventStartTime = new Date()
+            const eventEndTime = new Date()
+            eventEndTime.setMinutes(eventEndTime.getMinutes() + 60)
+
+            const event = {
+                summary: `${req.body.room_name}`,
+                description: description,
+                colorId: 2,
+                start: {
+                    dateTime: eventStartTime,
                 },
-                function (err, meeting) {
-                    if (err) {
-                        throw err;
-                    } else if (!meeting) {
-                        var newMeeting = new Meeting();
-                        newMeeting.room_name = req.body.room_name;
-                        newMeeting.room_code = room_code;
-                        newMeeting.password = newMeeting.encryptPassword(password);
-                        newMeeting.meeting_date = req.body.meeting_date;
-                        newMeeting.start_time = req.body.start_time;
-                        newMeeting.end_time = req.body.end_time;
-                        newMeeting.owner = req.user;
-                        newMeeting.save((err) => {
-                            if (err) throw err;
-                            req.flash("success", "You have scheduled the meeting sucessfully.");
-                            return res.redirect(`/`);
-                        });
-                    } else {
-                        req.flash("error", "Meeting cannot be created, Try Again.");
-                        return res.redirect("/instant-meeting");
-                    }
-                }
-            );
+                end: {
+                    dateTime: eventEndTime,
+                },
+            }
+            calendar.events.insert({
+                    calendarId: 'primary',
+                    resource: event
+                },
+                (err, eve) => {
+                    if (err) return console.error('Error Creating Calender Event:', err)
+                    console.log('Event:', eve)
+                    console.log('Event created successfully.')
+                    res.redirect(`${eve.data.htmlLink}`)
+                })
         }
     }
 );
+
 // // @desc    Meeting
 // // @route   GET /:path
 router.get("/meeting", ensureAuth, (req, res, next) => {

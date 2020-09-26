@@ -3,6 +3,9 @@ const LocalStrategy = require("passport-local").Strategy;
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const FacebookStrategy = require("passport-facebook").Strategy;
 const User = require("../models/User");
+const helper = require("../helpers/helper")
+const crypto = require("crypto")
+var token = crypto.randomBytes(64).toString('hex')
 
 // LOCAL
 passport.use(
@@ -25,6 +28,9 @@ passport.use(
                             user.password = user.encryptPassword(password);
                             user.save((err) => {
                                 if (err) throw err;
+                                if (!user.isVerified) {
+                                    helper.sendVerificationEmail(user, token);
+                                }
                                 return done(null, user);
                             });
                         } else if (user && user.email) {
@@ -32,17 +38,25 @@ passport.use(
                         } else {
                             var newUser = new User();
                             newUser.email = email;
+                            newUser.isVerified = false;
+                            newUser.verificationToken = token;
                             newUser.password = newUser.encryptPassword(password);
                             newUser.full_name = req.body.full_name;
                             newUser.save((err) => {
                                 if (err) {
                                     return done(err);
                                 }
+                                if (!newUser.isVerified) {
+                                    helper.sendVerificationEmail(newUser, token);
+                                }
                                 return done(null, newUser);
                             });
                         }
                     });
             } else {
+                if (!req.user.isVerified) {
+                    helper.sendVerificationEmail(req.user, token);
+                }
                 return done(null, req.user);
             }
         }
@@ -68,6 +82,9 @@ passport.use(
                     } else if (user.password && !user.validPassword(password)) {
                         return done(null, false, req.flash("error", "Incorrect Password"));
                     } else {
+                        if (!user.isVerified) {
+                            helper.sendVerificationEmail(user, token);
+                        }
                         return done(null, user);
                     }
                 }
@@ -84,7 +101,7 @@ passport.use(
             callbackURL: "/auth/google/callback",
             passReqToCallback: true,
         },
-        async (req, accessToken, refreshToken, profile, done) => {
+        (req, accessToken, refreshToken, profile, done) => {
             process.nextTick(function () {
                 if (!req.user) {
                     User.findOne({
@@ -93,8 +110,9 @@ passport.use(
                         function (err, user) {
                             if (err) return done(err);
                             if (user) {
-                                if (!user.token) {
-                                    user.token = accessToken;
+                                if (!user.isVerified) {
+                                    user.isVerified = true;
+                                    user.verificationToken = accessToken;
                                     user.full_name = profile.displayName;
                                     newUser.image = profile.photos[0].value;
                                     user.save(function (err) {
@@ -107,7 +125,8 @@ passport.use(
                             } else {
                                 var newUser = new User();
                                 newUser.id = profile.id;
-                                newUser.token = accessToken;
+                                newUser.isVerified = true;
+                                newUser.verificationToken = accessToken;
                                 newUser.full_name = profile.displayName;
                                 newUser.email = profile.emails[0].value;
                                 newUser.image = profile.photos[0].value;
@@ -121,7 +140,8 @@ passport.use(
                     );
                 } else {
                     var user = req.user;
-                    user.token = accessToken;
+                    user.isVerified = true;
+                    user.verificationToken = accessToken;
                     user.full_name = profile.displayName;
                     user.image = profile.photos[0].value;
 
@@ -153,8 +173,9 @@ passport.use(
                         function (err, user) {
                             if (err) return done(err);
                             if (user) {
-                                if (!user.token) {
-                                    user.token = accessToken;
+                                if (!user.isVerified) {
+                                    user.verificationToken = accessToken;
+                                    user.isVerified = false;
                                     user.full_name =
                                         profile.name.givenName +
                                         " " +
@@ -163,6 +184,28 @@ passport.use(
 
                                     user.save(function (err) {
                                         if (err) throw err;
+                                        if (!user.isVerified) {
+                                            helper.sendVerificationEmail(user, accessToken).then(sent => {
+                                                    console.log(`Email has been sent to ${user.email}`)
+                                                })
+                                                .catch(err => {
+                                                    if (err.response) {
+                                                        const {
+                                                            message,
+                                                            code,
+                                                            response
+                                                        } = err;
+
+                                                        // Extract response msg
+                                                        const {
+                                                            headers,
+                                                            body
+                                                        } = response;
+
+                                                        console.error(body);
+                                                    }
+                                                });
+                                        }
                                         return done(null, user);
                                     });
                                 }
@@ -172,7 +215,8 @@ passport.use(
                                 var newUser = new User();
 
                                 newUser.id = profile.id;
-                                newUser.token = accessToken;
+                                newUser.isVerified = false;
+                                newUser.verificationToken = accessToken;
                                 newUser.full_name =
                                     profile.name.givenName +
                                     " " +
@@ -183,6 +227,14 @@ passport.use(
                                 newUser.image = profile.photos[0].value;
                                 newUser.save(function (err) {
                                     if (err) throw err;
+                                    if (!newUser.isVerified) {
+                                        helper.sendVerificationEmail(newUser, accessToken).then(sent => {
+                                                console.log(`Email has been sent to ${newUser.email}`)
+                                            })
+                                            .catch(err => {
+                                                console.log(err)
+                                            });
+                                    }
                                     return done(null, newUser);
                                 });
                             }
@@ -190,13 +242,22 @@ passport.use(
                     );
                 } else {
                     var user = req.user;
-                    user.token = accessToken;
+                    user.verificationToken = accessToken;
+                    user.isVerified = false;
                     user.full_name =
                         profile.name.givenName + " " + profile.name.familyName;
                     user.image = profile.photos[0].value;
 
                     user.save(function (err) {
                         if (err) throw err;
+                        if (!user.isVerified) {
+                            helper.sendVerificationEmail(user, accessToken).then(sent => {
+                                    console.log(`Email has been sent to ${user.email}`)
+                                })
+                                .catch(err => {
+                                    console.log(err)
+                                });
+                        }
                         return done(null, user);
                     });
                 }
@@ -210,7 +271,9 @@ passport.serializeUser((user, done) => {
         _id: user._id,
         full_name: user.full_name,
         email: user.email,
-        image: user.image
+        image: user.image,
+        isVerified: user.isVerified
+
     }
     done(null, sessionUser)
 });

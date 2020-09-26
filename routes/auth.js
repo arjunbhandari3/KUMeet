@@ -46,6 +46,7 @@ router.post(
         .withMessage(
             "The password must have at least 8 characters, at least 1 digit(s), at least 1 lower case letter(s), at least 1 upper case letter(s)."
         )
+        .trim()
         .custom((value, {
             req
         }) => {
