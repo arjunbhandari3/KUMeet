@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const helper = require("../helpers/helper");
 const Meeting = require("../models/meeting");
+const url = require('url');
 const {
     google
 } = require('googleapis')
@@ -203,7 +204,30 @@ router.post(
                     if (err) return console.error('Error Creating Calender Event:', err)
                     console.log('Event:', eve)
                     console.log('Event created successfully.')
-                    res.redirect(`${eve.data.htmlLink}`)
+                    Meeting.findOne({
+                            room_code
+                        },
+                        function (err, meeting) {
+                            if (err) {
+                                throw err;
+                            } else if (!meeting) {
+                                var newMeeting = new Meeting();
+                                newMeeting.room_name = req.body.room_name;
+                                newMeeting.room_code = room_code;
+                                newMeeting.password = newMeeting.encryptPassword(password);
+                                newMeeting.owner = req.user;
+                                newMeeting.save((err) => {
+                                    if (err) throw err;
+                                    req.flash("success", "You have created the meeting sucessfully.");
+                                    let eid = url.parse(eve.data.htmlLink, true).query.eid;
+                                    res.redirect(`https://calendar.google.com/calendar/u/0/r/eventedit/${eid}?sf=true`)
+                                });
+                            } else {
+                                req.flash("error", "Meeting cannot be scheduled. Try Again.");
+                                return res.redirect("/schedule-meeting");
+                            }
+                        }
+                    );
                 })
         }
     }
