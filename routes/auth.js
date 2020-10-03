@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const passport = require("passport");
+const User = require("../models/User");
 const csrf = require("csurf");
 // CSRF Protection
 const csrfProtection = csrf({
@@ -182,6 +183,35 @@ router.get(
         res.redirect(oldUrl);
     }
 );
+
+router.get("/account/verify-email", ensureAuth, async function (req, res, next) {
+    if (!req.query.token) throw "Token cannnot be null."
+    try {
+        const user = await User.findOne({
+            verificationToken: req.query.token
+        });
+        if (!user) {
+            req.flash('error', 'Token is INVALID. Please contact us for assistance.')
+            res.redirect("/");
+        }
+        user.verificationToken = null;
+        user.isVerified = true;
+        await user.save();
+        await req.logIn(user, async (err) => {
+            if (err) return next(err);
+            req.flash('success', `Welcome to KUMeet, ${user.full_name}`)
+            var oldUrl = req.session.oldUrl || "/";
+            delete req.session.oldUrl;
+            res.redirect(oldUrl);
+        })
+    } catch (err) {
+        console.log(err)
+        req.flash("error", "Something went wrong. Please contact us for assistance.")
+        var oldUrl = req.session.oldUrl || "/";
+        delete req.session.oldUrl;
+        res.redirect(oldUrl);
+    }
+});
 
 // LOGOUT
 router.get("/logout", ensureAuth, function (req, res, next) {

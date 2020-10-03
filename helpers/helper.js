@@ -15,13 +15,16 @@ module.exports = {
         const msg = {
             from: process.env.EMAIL_FROM,
             to: user.email,
-            subject: 'Welcome to KUMeet! Verify Your Email',
-            html: `<h4>Verify Email</h4>
-               <p>Thanks for registering!</p>
+            subject: 'Verify Your Email',
+            html: `<h2>Welcome to KUMeet! Verify Your Email</h2>
+                <h4>Hi ${user.full_name},</h4>
                <p>Please click the below link to verify your email address:</p>
-              <p><a href="${verifyUrl}">${verifyUrl}</a></p>`
+              <p><a href="${verifyUrl}">${verifyUrl}</a></p>
+              <h4>Thanks for registering!</h4>
+              <p>Regards,</p>
+              <h4>KUMeet</h4>`
         }
         await sgMail.send(msg);
         console.log('Mail sent successfully')
-    },
+    }
 };

@@ -24,6 +24,14 @@ export default {
         }
     },
 
+    keepStreamActive(stream) {
+        var video = document.createElement('video');
+        video.muted = true;
+        video.srcObject = stream;
+        video.style.display = 'none';
+        (document.body || document.documentElement).appendChild(video);
+    },
+
     shareScreen() {
         if (this.userMediaAvailable()) {
             return navigator.mediaDevices.getDisplayMedia({
@@ -108,16 +116,21 @@ export default {
         mirrorMode ? localVidElem.classList.add('mirror-mode') : localVidElem.classList.remove('mirror-mode');
     },
 
-    setPresenterStream(userId) {
+    setPresenterStream(userId, isPresenting) {
         var screenVidElem = document.getElementById('screenShareVideo');
         screenVidElem.classList.add(`${userId}`);
         var screenshareID = document.getElementById('screenShareVideo').className;
         if (screenshareID === userId) {
             console.log(userId, screenshareID, userId)
             screenVidElem.srcObject = document.getElementById(`${userId}-video`).srcObject;
+            if (isPresenting) {
+                document.getElementById('videos').setAttribute('hidden', 'true');
+                document.getElementById('screenShareScreen').removeAttribute('hidden');
+            } else {
+                document.getElementById('screenShareScreen').setAttribute('hidden', 'true');
+                document.getElementById('videos').removeAttribute('hidden');
+            }
 
-            document.getElementById('videos').setAttribute('hidden', 'true');
-            document.getElementById('screenShareScreen').removeAttribute('hidden');
         }
     },
 

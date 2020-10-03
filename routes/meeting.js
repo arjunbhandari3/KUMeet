@@ -184,7 +184,6 @@ router.post(
             const eventStartTime = new Date()
             const eventEndTime = new Date()
             eventEndTime.setMinutes(eventEndTime.getMinutes() + 60)
-
             const event = {
                 summary: `${req.body.room_name}`,
                 description: description,
@@ -218,7 +217,6 @@ router.post(
                                 newMeeting.owner = req.user;
                                 newMeeting.save((err) => {
                                     if (err) throw err;
-                                    req.flash("success", "You have created the meeting sucessfully.");
                                     let eid = url.parse(eve.data.htmlLink, true).query.eid;
                                     res.redirect(`https://calendar.google.com/calendar/u/0/r/eventedit/${eid}?sf=true`)
                                 });
@@ -249,7 +247,7 @@ router.get("/meeting", ensureAuth, (req, res, next) => {
                         layout: "meeting",
                         page: meeting.room_name,
                         user: req.user,
-                        meeting: meeting
+                        meeting: meeting,
                     });
                 } else {
                     req.flash("error", "Couldn't find the meeting you are trying to join. Please try again.");

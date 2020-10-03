@@ -1,13 +1,13 @@
 import h from './helpers.js';
-import '../js/canvas-designer-widget.js';
 
 window.addEventListener('load', () => {
 
     const room = new URLSearchParams(window.location.search).get('room');
+    const password = new URLSearchParams(window.location.search).get('pwd');
     const username = document.getElementById(`remote-name`).value;
     document.getElementById(`meetingRoom`).innerHTML = room;
     document.getElementById(`meetingURL`).innerHTML = window.location.href;
-    document.getElementById(`meetingPWD`).innerHTML = new URLSearchParams(window.location.search).get('pwd');
+    document.getElementById(`meetingPWD`).innerHTML = password;
 
     var pc = [];
     let socket = io('/stream');
@@ -16,8 +16,11 @@ window.addEventListener('load', () => {
     var myStream = '';
     var screen = '';
     var canvasStream = '';
+    var recordedStream = [];
+    var mediaRecorder = '';
     var presenter;
     var presenterID;
+    var isPresenting;
 
     //Get user video by default
     getAndSetUserStream();
@@ -47,8 +50,7 @@ window.addEventListener('load', () => {
             h.alert("success", `You joined the meeting!`, 'bottom-start');
             if (presenter != undefined) {
                 h.alert("info", `${presenter} is presenting screen!`, 'top-start');
-                h.setPresenterStream(presenterID);
-                console.log(presenterID, presenter, '1111')
+                h.setPresenterStream(presenterID, isPresenting);
             }
         });
 
@@ -90,7 +92,7 @@ window.addEventListener('load', () => {
 
         socket.on('presenter', (data) => {
             h.alert("info", `${data.presenter} is presenting screen!`, 'top-start');
-            h.setPresenterStream(data.presenterID);
+            h.setPresenterStream(data.presenterID, data.isPresenting);
         });
 
         socket.on('chat', (data) => {
@@ -114,6 +116,7 @@ window.addEventListener('load', () => {
         });
 
         socket.on('user leave', (data) => {
+            pc.pop(data.socketId);
             h.closeVideo(data.socketId);
             h.alert("error", `${username} left the meeting!`, 'bottom-start');
         });
@@ -228,15 +231,18 @@ window.addEventListener('load', () => {
                 case 'disconnected':
                     presenter = null;
                     presenterID = null;
+                    isPresenting = false;
                 case 'failed':
                     h.closeVideo(partnerID);
                     presenter = null;
                     presenterID = null;
+                    isPresenting = false;
                     break;
                 case 'closed':
                     h.closeVideo(partnerID);
                     presenter = null;
                     presenterID = null;
+                    isPresenting = false;
                     break;
             }
         };
@@ -284,7 +290,7 @@ window.addEventListener('load', () => {
         };
         presenter = null;
         presenterID = null;
-
+        isPresenting = false;
         //emit hand raised
         socket.emit('user leave', data);
         h.alert("error", `You left the meeting!`, 'bottom-start');
@@ -395,21 +401,21 @@ window.addEventListener('load', () => {
     designer.setTools({
         pencil: true,
         text: true,
-        image: true,
-        pdf: true,
+        image: false,
+        pdf: false,
         eraser: true,
         line: true,
         arrow: true,
-        dragSingle: true,
+        dragSingle: false,
         dragMultiple: true,
         arc: true,
         rectangle: true,
         quadratic: false,
-        bezier: true,
+        bezier: false,
         marker: true,
         zoom: false,
         lineWidth: false,
-        colorsPicker: true,
+        colorsPicker: false,
         extraOptions: false,
         code: false,
         undo: true
@@ -436,10 +442,12 @@ window.addEventListener('load', () => {
             let data = {
                 room: room,
                 presenterID: socketId,
-                presenter: username
+                presenter: username,
+                isPresenting: true
             };
             presenter = username;
             presenterID = socketId;
+            isPresenting = true;
 
             socket.emit('presenter', data);
             h.alert("info", `You are presenting your screen!`, 'top-start');
@@ -470,6 +478,17 @@ window.addEventListener('load', () => {
             document.getElementById('videos').removeAttribute('hidden');
 
             broadcastNewTracks(myStream, 'video');
+            let data = {
+                room: room,
+                presenterID: socketId,
+                presenter: username,
+                isPresenting: false
+            };
+            presenter = null;
+            presenterID = null;
+            isPresenting = false;
+
+            socket.emit('presenter', data);
         }).catch((e) => {
             console.error(e);
         });
@@ -668,6 +687,79 @@ window.addEventListener('load', () => {
         }, () => {
             h.alert("error", "Failed to copy", 'top-start');
         })
+    });
+
+    function captureScreen(cb) {
+        h.shareScreen().then(cb);
+    };
+
+    function captureLocalVideo(cb) {
+        h.getUserFullMedia().then((cb))
+    };
+
+    function toggleRecordingIcons(isRecording) {
+        let e = document.getElementById('recordVideo');
+
+        if (isRecording) {
+            e.setAttribute('title', 'Stop Recording');
+            e.classList.add('record');
+        } else {
+            e.setAttribute('title', 'Start Recording');
+            e.classList.remove('record');
+        }
+    }
+
+    document.getElementById('recordVideo').addEventListener('click', (e) => {
+        if (!mediaRecorder || mediaRecorder.state == 'inactive') {
+            captureScreen((screen) => {
+                h.keepStreamActive(screen);
+                captureLocalVideo((myStream) => {
+                    h.keepStreamActive(myStream);
+                    screen.width = window.screen.width;
+                    screen.height = window.screen.height;
+                    screen.fullcanvas = true;
+                    myStream.width = 320;
+                    myStream.height = 240;
+                    myStream.top = screen.height - myStream.height;
+                    myStream.left = screen.width - myStream.width;
+
+                    mediaRecorder = new MediaRecorder(new MediaStream([screen.getTracks()[0], myStream.getTracks()[0]]), {
+                        mimeType: 'video/webm;codecs=vp9'
+                    });
+
+                    mediaRecorder.start(1000);
+                    toggleRecordingIcons(true);
+
+                    mediaRecorder.ondataavailable = function (e) {
+                        recordedStream.push(e.data);
+                    };
+
+                    mediaRecorder.onstop = function () {
+                        toggleRecordingIcons(false);
+
+                        let blob = new Blob(recordedStream, {
+                            type: 'video/webm'
+                        });
+
+                        let file = new File([blob], `${ username }-${ moment().unix() }-record.webm`);
+
+                        saveAs(file);
+
+                        setTimeout(() => {
+                            recordedStream = [];
+                        }, 3000);
+                    };
+
+                    mediaRecorder.onerror = function (e) {
+                        console.error(e);
+                    }
+                });
+            });
+        } else if (mediaRecorder.state == 'paused') {
+            mediaRecorder.resume();
+        } else if (mediaRecorder.state == 'recording') {
+            mediaRecorder.stop();
+        }
     });
 
     // document.getElementById('check-btn').addEventListener('click', (e) => {

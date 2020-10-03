@@ -47,7 +47,7 @@ passport.use(
                                     return done(err);
                                 }
                                 if (!newUser.isVerified) {
-                                    helper.sendVerificationEmail(newUser, token);
+                                    helper.sendVerificationEmail(newUser, token)
                                 }
                                 return done(null, newUser);
                             });
@@ -184,28 +184,7 @@ passport.use(
 
                                     user.save(function (err) {
                                         if (err) throw err;
-                                        if (!user.isVerified) {
-                                            helper.sendVerificationEmail(user, accessToken).then(sent => {
-                                                    console.log(`Email has been sent to ${user.email}`)
-                                                })
-                                                .catch(err => {
-                                                    if (err.response) {
-                                                        const {
-                                                            message,
-                                                            code,
-                                                            response
-                                                        } = err;
-
-                                                        // Extract response msg
-                                                        const {
-                                                            headers,
-                                                            body
-                                                        } = response;
-
-                                                        console.error(body);
-                                                    }
-                                                });
-                                        }
+                                        helper.sendVerificationEmail(user, accessToken)
                                         return done(null, user);
                                     });
                                 }
@@ -228,12 +207,7 @@ passport.use(
                                 newUser.save(function (err) {
                                     if (err) throw err;
                                     if (!newUser.isVerified) {
-                                        helper.sendVerificationEmail(newUser, accessToken).then(sent => {
-                                                console.log(`Email has been sent to ${newUser.email}`)
-                                            })
-                                            .catch(err => {
-                                                console.log(err)
-                                            });
+                                        helper.sendVerificationEmail(newUser, accessToken)
                                     }
                                     return done(null, newUser);
                                 });
@@ -251,12 +225,7 @@ passport.use(
                     user.save(function (err) {
                         if (err) throw err;
                         if (!user.isVerified) {
-                            helper.sendVerificationEmail(user, accessToken).then(sent => {
-                                    console.log(`Email has been sent to ${user.email}`)
-                                })
-                                .catch(err => {
-                                    console.log(err)
-                                });
+                            helper.sendVerificationEmail(user, accessToken)
                         }
                         return done(null, user);
                     });
