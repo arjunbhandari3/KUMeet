@@ -121,7 +121,6 @@ export default {
         screenVidElem.classList.add(`${userId}`);
         var screenshareID = document.getElementById('screenShareVideo').className;
         if (screenshareID === userId) {
-            console.log(userId, screenshareID, userId)
             screenVidElem.srcObject = document.getElementById(`${userId}-video`).srcObject;
             if (isPresenting) {
                 document.getElementById('videos').setAttribute('hidden', 'true');
@@ -132,11 +131,6 @@ export default {
             }
 
         }
-    },
-
-    addUserProfile(useProfile) {
-        var vidElem = document.getElementById('card');
-        const html = `<i class="fa fa-video-slash"></i>`
     },
 
     adjustVideoElemSize() {

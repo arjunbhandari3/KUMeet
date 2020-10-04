@@ -191,7 +191,6 @@ window.addEventListener('load', () => {
         //add
         pc[partnerID].ontrack = (e) => {
             let str = e.streams[0];
-            console.log(str)
             if (str.isScreen) {
                 let screenELm = document.getElementById(`screenShareVideo`);
                 screenELm.classList.add(`${userId}`);
