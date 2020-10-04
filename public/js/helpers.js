@@ -52,13 +52,24 @@ export default {
     getIceServer() {
         return {
             iceServers: [{
-                urls: [
-                    'stun:stun.l.google.com:19302',
-                    'stun:stun1.l.google.com:19302',
-                    'stun:stun2.l.google.com:19302',
-                    'stun:stun.l.google.com:19302?transport=udp',
-                ]
-            }]
+                    urls: [
+                        'stun:stun.l.google.com:19302',
+                        'stun:stun1.l.google.com:19302',
+                        'stun:stun2.l.google.com:19302',
+                        'stun:stun.l.google.com:19302?transport=udp',
+                    ]
+                },
+                {
+                    urls: "stun:numb.viagenie.ca",
+                    username: "sultan1640@gmail.com",
+                    credential: "98376683"
+                },
+                {
+                    urls: "turn:numb.viagenie.ca",
+                    username: "sultan1640@gmail.com",
+                    credential: "98376683"
+                }
+            ]
         };
     },
 
