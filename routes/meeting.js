@@ -179,7 +179,8 @@ router.post(
         } else {
             const room_code = helper.generateRandomString();
             const password = helper.generateRandomPassword();
-            let meetingLink = `http://localhost:3000/meeting?room=${room_code}&pwd=${password}`
+            let meetingLink = `https://kumeet.herokuapp.com/meeting?room=${room_code}&pwd=${password}`
+            // let meetingLink = `http://localhost:3000/meeting?room=${room_code}&pwd=${password}`
             let description = `You have a meeting scheduled today. Your Meeting Details are:\n Meeting Link: ${meetingLink} \n Meeting Room Name: ${req.body.room_name} \n Meeting Room Password: ${password}`;
             const eventStartTime = new Date()
             const eventEndTime = new Date()

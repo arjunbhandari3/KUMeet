@@ -11,7 +11,8 @@ module.exports = {
     },
 
     async sendVerificationEmail(user, token) {
-        const verifyUrl = `http://localhost:3000/account/verify-email?token=${token}`;
+        let verifyUrl = `https://kumeet.herokuapp.com/account/verify-email?token=${token}`
+        // const verifyUrl = `http://localhost:3000/account/verify-email?token=${token}`;
         const msg = {
             from: process.env.EMAIL_FROM,
             to: user.email,
