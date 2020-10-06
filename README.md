@@ -1,4 +1,4 @@
-# KUMeet (Ongoing)
+# KUMeet
 Video Conferencing using WebRTC
 
 ## Features
