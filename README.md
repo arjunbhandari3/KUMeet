@@ -7,4 +7,6 @@ Video Conferencing using WebRTC
    - Chat
    - File Sharing
    - Hand Raising
+   - White Board
+   - Screen Recording
 
